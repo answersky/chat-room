@@ -1,0 +1,1638 @@
+﻿<html  ng-app="group-chat" ng-controller="chatController">
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="description" content="A web chat application power by koa and react"/>
+		<meta name="keywords" content="AW,node,react"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0, maximum-scale=1, minimum-scale=1"/>
+		<link rel="stylesheet" type="text/css" href="stylesheets/chat/data-flex-css-layout.min.css"/>
+		<link rel="stylesheet" type="text/css" href="stylesheets/chat/main.css"/>
+		<link rel="Shortcut Icon" href="img/favicon.ico"/>
+		
+		<style type="text/css">
+			.roominfo-li{
+				padding: 5px 48px 5px 0;
+			}
+		.container {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			position: relative;
+			background: #eee
+		}</style>
+
+		<style type="text/css">
+
+		.password > .login-hand-focus {
+			-webkit-transform: translateY(-20px) translateX(50px) scale(.7);
+			transform: translateY(-20px) translateX(50px) scale(.7);
+			left: 14px;
+			bottom: -8px
+		}
+
+		.password > .login-hand-r-focus {
+			-webkit-transform: translateY(-20px) translateX(-50px) scale(.7);
+			transform: translateY(-20px) translateX(-50px) scale(.7);
+			left: 170px;
+			bottom: -8px
+		}
+
+
+
+		.password > .login-arms > .login-arm-focus {
+			-webkit-transform: translateY(-40px) translateX(40px);
+			transform: translateY(-40px) translateX(40px);
+			left: 20px;
+			top: 40px
+		}
+
+		.password > .login-arms > .login-arm-r-focus {
+			-webkit-transform: translateY(-40px) translateX(-40px) scaleX(-1);
+			transform: translateY(-40px) translateX(-40px) scaleX(-1);
+			left: 158px;
+			top: 40px
+		}
+
+
+		.login input {
+			padding: 9px 6px 9px 40px;
+			height: auto;
+			color: #444
+		}
+
+		.login-actions a {
+			color: #777
+		}
+
+		.login-actions a:hover {
+			color: #2283c9
+		}
+
+		</style>
+
+		<style type="text/css">
+			.avatar {
+			background-color: #fff;
+			background-position: 50%;
+			background-repeat: no-repeat;
+			background-size: cover;
+			border-radius: 50%;
+			position: relative
+		}
+		</style>
+
+		<style type="text/css">
+			.selfinfo-container {
+			width: 60px
+		}
+
+		.selfinfo-avatar {
+			margin-top: 20px
+		}
+
+		.selfinfo-icon-ul {
+			display: block;
+			padding: 0;
+			padding-bottom: 50px
+		}
+
+		.selfinfo-icon-list, .selfinfo-icon-list-select {
+			display: block;
+			list-style: none;
+			width: 48px;
+			height: 48px;
+			text-align: center;
+			transform: all .2s;
+		}
+
+		.selfinfo-icon-list-select, .selfinfo-icon-list:hover {
+			background: hsla(0, 0%, 100%, .1);
+			border-radius: 10px
+		}
+
+		.selfinfo-icon-list:hover {
+			display: block;
+			list-style: none;
+			width: 48px;
+			height: 48px;
+			text-align: center;
+			transform: all .2s;
+		}
+
+		.selfinfo-icon {
+			font-family: iconfont;
+			font-style: normal;
+			color: #fff;
+			line-height: 48px;
+			font-size: 1.5rem;
+			cursor: pointer
+		}</style>
+
+		<style type="text/css">.listitem-li {
+			transition: all .3s;
+			list-style: none;
+			position: relative;
+			padding-left: 10px;
+			height: 50px
+		}
+
+		.listitem-li-select, .listitem-li:hover {
+			transition: all .3s;
+			list-style: none;
+			position: relative;
+			padding-left: 10px;
+			height: 50px;
+			background: hsla(0, 0%, 100%, .5);
+			border-radius: 5px
+		}
+
+		.listitem-span {
+			padding-left: 10px;
+			line-height: 50px;
+			color: #666;
+			cursor: pointer;
+			white-space: nowrap;
+			text-overflow: ellipsis
+		}
+
+		.listitem-li:hover .listitem-icon-box {
+			opacity: 1
+		}
+
+		</style>
+
+		<style type="text/css">
+			.friendlist-ul {
+			display: block;
+			padding: 0;
+			margin: 0
+		}
+
+		.friendlist-header input {
+			display: block;
+			border: none;
+			height: 30px;
+			border-radius: 4px;
+			width: 165px;
+			padding-right: 25px;
+			font-size: 1rem
+		}
+
+
+		.friendlist-list-box {
+			height: 90%;
+			overflow-x: hidden;
+			overflow-y: scroll
+		}</style>
+
+		<style type="text/css">
+			.block1, .block3 {
+			height: 100%
+		}
+
+		.block3 {
+			background: rgba(12, 137, 255, .9)
+		}
+
+		.block4 {
+			background: rgba(239, 240, 245, .6);
+			height: 100%
+		}</style>
+
+		<style type="text/css">
+
+		@-webkit-keyframes loading-center-absolute {
+			to {
+				-webkit-transform: rotate(-45deg)
+			}
+		}
+
+		@keyframes loading-center-absolute {
+			to {
+				transform: rotate(-45deg);
+				-webkit-transform: rotate(-45deg)
+			}
+		}
+
+		@-webkit-keyframes object_one {
+			25% {
+				-webkit-transform: translateY(-50px) rotate(-180deg)
+			}
+			to {
+				-webkit-transform: translate(0) rotate(-180deg)
+			}
+		}
+
+		@keyframes object_one {
+			25% {
+				transform: translateY(-50px) rotate(-180deg);
+				-webkit-transform: translateY(-50px) rotate(-180deg)
+			}
+			to {
+				transform: translate(0) rotate(-180deg);
+				-webkit-transform: translate(0) rotate(-180deg)
+			}
+		}
+
+		@-webkit-keyframes object_two {
+			25% {
+				-webkit-transform: translate(50px) rotate(-180deg)
+			}
+			to {
+				-webkit-transform: translate(0) rotate(-180deg)
+			}
+		}
+
+		@keyframes object_two {
+			25% {
+				transform: translate(50px) rotate(-180deg);
+				-webkit-transform: translate(50px) rotate(-180deg)
+			}
+			to {
+				transform: translate(0) rotate(-180deg);
+				-webkit-transform: translate(0) rotate(-180deg)
+			}
+		}
+
+		@-webkit-keyframes object_three {
+			25% {
+				-webkit-transform: translate(-50px) rotate(-180deg)
+			}
+			to {
+				-webkit-transform: translate(0) rotate(-180deg)
+			}
+		}
+
+		@keyframes object_three {
+			25% {
+				transform: translate(-50px) rotate(-180deg);
+				-webkit-transform: translate(-50px) rotate(-180deg)
+			}
+			to {
+				transform: translate(0) rotate(-180deg);
+				-webkit-transform: rtranslate(0, 0) rotate(-180deg)
+			}
+		}
+
+		@-webkit-keyframes object_four {
+			25% {
+				-webkit-transform: translateY(50px) rotate(-180deg)
+			}
+			to {
+				-webkit-transform: translate(0) rotate(-180deg)
+			}
+		}
+
+		@keyframes object_four {
+			25% {
+				transform: translateY(50px) rotate(-180deg);
+				-webkit-transform: translateY(50px) rotate(-180deg)
+			}
+			to {
+				transform: translate(0) rotate(-180deg);
+				-webkit-transform: translate(0) rotate(-180deg)
+			}
+		}</style>
+
+		<style type="text/css">
+			.headbar {
+			background: hsla(0, 0%, 100%, .65034)
+		}
+
+		.headbar-icon {
+			font-family: iconfont;
+			font-style: normal;
+			cursor: pointer;
+			font-size: 1.5rem;
+			line-height: 58px;
+			color: #888;
+			transition: all .1s
+		}
+
+		.headbar-icon:hover {
+			color: #333
+		}
+
+		.headbar-icon-container {
+			width: 45px;
+			height: 55px;
+			text-align: center
+		}
+
+		.headbar-line {
+			height: 36px;
+			width: 1px;
+			background: #ccc
+		}
+
+		.headbar-room-name {
+			font-weight: 600;
+			font-style: italic;
+			padding-left: 10px
+		}</style>
+
+		<style type="text/css">
+			.message-container {
+			width: 100%;
+			max-width: 980px;
+			padding: 10px 6px 0 12px
+		}
+
+		.message {
+			position: relative;
+			display: inline-block;
+			word-break: break-all;
+			background: #fff;
+			text-align: left;
+			padding: 6px 12px;
+			max-width: 95%;
+			min-height: 35px;
+			border: 1px solid #ccc;
+			border-radius: 8px
+		}
+
+		.avatar-container {
+			margin-top: 5px
+		}
+
+		.message-nickname-box {
+			padding: 0 2px;
+			display: block;
+			font-size: .85rem;
+			color: #222
+		}
+
+		.message-nickname {
+			padding-right: 5px
+		}
+
+		.triangle-left-inner {
+			left: -7px;
+			border-right: 10px solid #fff;
+			top: 6px
+		}
+
+		.triangle-left-inner, .triangle-left-outer {
+			content: "";
+			-webkit-transform: rotate(20deg);
+			transform: rotate(20deg);
+			position: absolute;
+			border-top: 2px solid transparent;
+			border-bottom: 7px solid transparent
+		}
+
+		.triangle-left-outer {
+			left: -9px;
+			border-right: 10px solid #ccc;
+			top: 5px
+		}
+
+		.triangle-right-inner {
+			right: -7px;
+			border-left: 10px solid #fff;
+			top: 6px
+		}
+
+		.triangle-right-inner, .triangle-right-outer {
+			content: "";
+			-webkit-transform: rotate(-20deg);
+			transform: rotate(-20deg);
+			position: absolute;
+			border-top: 2px solid transparent;
+			border-bottom: 7px solid transparent
+		}
+
+		.triangle-right-outer {
+			right: -9px;
+			border-left: 10px solid #ccc;
+			top: 5px
+		}
+
+		</style>
+
+		<style type="text/css">
+			.icon {
+			font-family: iconfont;
+			font-style: normal;
+			font-weight: 600;
+			font-size: 21px;
+			color: #555;
+			cursor: pointer
+		}
+
+		.icon-box {
+			width: 40px;
+			height: 48px;
+			text-align: center;
+			line-height: 48px
+		}
+
+		.inputarea {
+			margin: 0 8px
+		}
+
+		.input-box {
+			position: relative;
+			padding: 6px 0
+		}
+
+		.input {
+			font-size: 1rem;
+			height: 2.2rem;
+			margin-top: 2px;
+			padding-left: 6px;
+			padding-right: 40px;
+			border-color: rgba(0, 0, 0, .117647)
+		}
+
+		.show-codetext-btn {
+			font-family: iconfont;
+			font-style: normal;
+			font-weight: 600;
+			font-size: 21px;
+			color: #a9a9a9;
+			cursor: pointer;
+			position: absolute;
+			right: 15px;
+			top: 14px
+		}
+		</style>
+
+
+		<style type="text/css">
+			.info-card-bg {
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 1;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, .2)
+		}
+
+		.info-card-box {
+			position: absolute;
+			z-index: 1;
+			width: 310px;
+			height: 380px;
+			top: 50%;
+			left: 50%;
+			margin: -190px 0 0 -155px;
+			box-shadow: 0 0 10px #777;
+			border-radius: 3px
+		}
+
+		.info-card-header {
+			width: 100%;
+			height: 145px;
+			background: url("http://oajmk96un.bkt.clouddn.com/bg10002.jpg") 50% no-repeat
+		}
+
+		.info-card-container {
+			width: 100%;
+			background: #fff;
+			padding-top: 5px;
+			height: 180px;
+			overflow: visible;
+			overflow-x: scroll;
+			color: #666;
+			padding: 10px 20px 0
+		}
+
+		.info-card-setting {
+			width: 100%
+		}
+
+		.info-card-container dl {
+			margin: 6px 0
+		}
+
+		.info-card-container dt {
+			color: #777
+		}
+
+		.info-card-container dd {
+			color: #333;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis
+		}
+
+		.info-card-container dd:hover {
+			white-space: normal
+		}
+
+		.info-card-head-left {
+			height: 100%;
+			color: #fff;
+			text-align: center;
+			padding-left: 35px;
+			padding-top: 35px
+		}
+
+		.info-card-head-right {
+			padding-top: 20px;
+			position: relative;
+			height: 100%
+		}
+
+		.info-card-close-btn {
+			position: absolute;
+			top: 5px;
+			left: 5px;
+			width: 13px;
+			height: 13px;
+			text-align: center;
+			border-radius: 50%;
+			cursor: pointer;
+			background: #eee;
+			color: #eee
+		}
+
+		.info-card-close-btn:hover {
+			background: red;
+			color: #000
+		}
+
+		.info-card-close-icon, .info-card-icon {
+			font-family: iconfont;
+			font-style: normal
+		}
+
+		.info-card-close-icon {
+			cursor: pointer;
+			line-height: 13px;
+			font-size: .6rem
+		}
+
+		.info-card-input-file {
+			position: absolute;
+			width: 63px;
+			height: 63px;
+			border-radius: 50%;
+			opacity: 0;
+			left: 5px
+		}
+
+		.info-card-footer-li:hover {
+			color: #38adff
+		}
+
+		.info-card-btn-box {
+			border-top: 1px solid #e3e3e5;
+			background: #f9f9f9;
+			height: 60px;
+			width: 100%;
+			background: #fff;
+			border: none
+		}
+
+		.info-card-btn {
+			display: block;
+			width: 150px;
+			padding: 10px;
+			margin: auto;
+			border: none;
+			background: #00cff6;
+			border-radius: 4px;
+			color: #fff;
+			font-size: .9rem
+		}
+		</style>
+
+		<style type="text/css">
+
+		.roominfo {
+			width: 230px;
+			height: 100%;
+			padding: 9px;
+			background: hsla(0, 0%, 100%, .3)
+		}
+
+		.roominfo-bulletin {
+			font-size: small;
+			color: #333;
+			padding: 0 10px;
+			height: 130px;
+			overflow-y: scroll
+		}
+
+		.roominfo-title {
+			display: inline-block;
+			color: #444;
+			padding-right: 15px
+		}
+
+		.roominfo-icon {
+			font-size: 12px;
+			line-height: 24px
+		}
+
+		.hr {
+			height: 1px;
+			width: 188px;
+			margin: auto;
+			background: #eee
+		}
+
+		.roominfo-list {
+			padding: 3px;
+			padding-top: 6px;
+			border-collapse: collapse
+		}
+
+		.roominfo-ul {
+			padding-top: 3px;
+			height: 65%;
+			overflow-y: scroll
+		}
+
+		</style>
+
+		<style type="text/css">
+			.scroll-show::-webkit-scrollbar {
+			width: 5px;
+			height: 5px;
+			-webkit-transition: all .5s ease-in 0ms;
+			transition: all .5s ease-in 0ms
+		}
+
+		.scroll-show::-webkit-scrollbar-thumb {
+			border-radius: 9px;
+			box-shadow: inset 0 0 3px #888;
+			background-color: #999
+		}
+
+		.scroll-hidden::-webkit-scrollbar {
+			width: 5px;
+			height: 5px;
+			-webkit-transition: all .5s ease-in 0ms;
+			transition: all .5s ease-in 0ms
+		}
+
+		.scroll-hidden::-webkit-scrollbar-thumb {
+			border-radius: 9px;
+			box-shadow: inset 0 0 3px hsla(0, 0%, 100%, 0);
+			background-color: hsla(0, 0%, 100%, 0)
+		}</style>
+
+		<style type="text/css">
+			.chatarea-loading-anim {
+			-webkit-transition: all .5s;
+			transition: all .5s
+		}
+
+		.chatarea-loading {
+			width: 100%;
+			position: relative;
+			background: hsla(0, 0%, 80%, .8);
+			text-align: center;
+			line-height: 50px;
+			color: #fff
+		}
+
+		.chatarea-messages {
+			position: relative
+		}
+
+		.chatarea-messages [data-flex], .chatarea-messages [data-flex] > * {
+			overflow: visible
+		}
+
+		.chatarea-bottom, .chatarea-load {
+			position: absolute;
+			z-index: 1;
+			width: 122px;
+			height: 30px;
+			padding-left: 10px;
+			line-height: 30px;
+			text-align: left;
+			cursor: pointer;
+			color: #2ecc71;
+			border: 1px solid #2ecc71;
+			border-radius: 3px;
+			background: rgba(213, 245, 226, .8);
+			box-shadow: 0 0 9px 0 rgba(213, 245, 226, .9);
+			right: 20px
+		}
+
+		.chatarea-bottom {
+			display: none;
+			bottom: 55px
+		}
+
+		.chatarea-icon {
+			color: #2ecc71;
+			font-size: .8rem;
+			line-height: 30px
+		}
+		</style>
+
+		<style type="text/css">
+			a {
+			text-decoration: none
+		}
+		</style>
+
+		<style type="text/css">
+			.createroom-enter {
+			transform: scale(.5);
+			transform: translateY(-300px);
+			opacity: .5
+		}
+
+		.createroom-enter.createroom-enter-active {
+			-webkit-transition: all .3s;
+			transition: all .3s;
+			transform: translateX(0);
+			opacity: 1
+		}
+
+		.createroom-leave {
+			transform: translateY(0);
+			opacity: 1
+		}
+
+		.createroom-leave.createroom-leave-active {
+			-webkit-transition: all .3s;
+			transition: all .3s;
+			transform: translateY(-300px);
+			opacity: .5
+		}
+
+		.createroom {
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 1;
+			width: 100%;
+			height: 100%;
+			background: transparent
+		}
+
+		.createroom-header {
+			height: 45px;
+			line-height: 45px;
+			letter-spacing: 2px;
+			text-align: center;
+			background: #fff
+		}
+
+		.createroom-container {
+			width: 80%;
+			min-width: 280px;
+			max-width: 500px;
+			background: #fff;
+			border-radius: 4px;
+			box-shadow: 0 0 6px 0 #ccc;
+			margin: auto;
+			margin-top: 20%
+		}
+
+		.createroom-form {
+			background: #fafafa;
+			padding: 25px 20px
+		}
+
+		.createroom-input-group {
+			display: inline-block;
+			width: 80%;
+			padding-right: 10px
+		}
+
+		.createroom-input {
+			width: 100%;
+			font-size: 1rem;
+			border: 1px solid #ccc;
+			background: #fff;
+			border-radius: 3px;
+			padding: 5px 0;
+			outline: none
+		}
+
+		.createroom-btn {
+			display: inline-block;
+			background: #46b2fe;
+			color: #fff;
+			border: none;
+			border-radius: 3px;
+			font-size: .9rem;
+			padding: 5px;
+			letter-spacing: 3px
+		}
+
+		.createroom-close {
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			z-index: -1;
+			background: transparent
+		}</style>
+
+		<style type="text/css">
+			.searchuser-enter {
+			transform: scale(.5);
+			transform: translateY(-300px);
+			opacity: .5
+		}
+
+		.searchuser-enter.searchuser-enter-active {
+			-webkit-transition: all .3s;
+			transition: all .3s;
+			transform: translateX(0);
+			opacity: 1
+		}
+
+		.searchuser-leave {
+			transform: translateY(0);
+			opacity: 1
+		}
+
+		.searchuser-leave.searchuser-leave-active {
+			-webkit-transition: all .3s;
+			transition: all .3s;
+			transform: translateY(-300px);
+			opacity: .5
+		}
+
+		.searchuser {
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 1;
+			width: 100%;
+			height: 100%;
+			background: transparent
+		}
+
+		.searchuser-header {
+			height: 45px;
+			line-height: 45px;
+			padding: 0 10px 0 20px;
+			letter-spacing: 2px;
+			text-align: center;
+			background: #fff
+		}
+
+		.searchuser-container {
+			width: 80%;
+			min-width: 270px;
+			max-width: 620px;
+			background: #fff;
+			border-radius: 4px;
+			box-shadow: 0 0 6px 0 #ccc;
+			margin: auto;
+			margin-top: 15%
+		}
+
+		.searchuser-form {
+			background: #fafafa;
+			padding: 25px 20px
+		}
+
+		.searchuser-input-group {
+			display: inline-block;
+			width: 80%;
+			padding-right: 10px
+		}
+
+		.searchuser-input {
+			width: 100%;
+			font-size: 1rem;
+			border: 1px solid #ccc;
+			background: #fff;
+			border-radius: 3px;
+			padding: 5px 0;
+			outline: none
+		}
+
+		.searchuser-btn {
+			display: inline-block;
+			background: #46b2fe;
+			color: #fff;
+			border: none;
+			border-radius: 3px;
+			font-size: .9rem;
+			padding: 5px;
+			letter-spacing: 3px
+		}
+
+		.searchuser-close {
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			z-index: -1;
+			background: transparent
+		}
+
+		.searchuser-ul {
+			max-height: 50%;
+			background: #fafafa;
+			overflow-y: scroll
+		}
+
+		.searchuser-li {
+			display: inline-block;
+			list-style: none;
+			margin: 0 0 1em 1em;
+			width: 45%;
+			min-width: 200px
+		}
+
+		.searchuser-li > div {
+			display: inline-block;
+			float: left
+		}
+
+		.searchuser-nickname {
+			display: inline-block;
+			line-height: 40px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			color: #666;
+			padding-left: 10px;
+			cursor: pointer
+		}</style>
+
+		<style type="text/css">
+			.system-setting-box-enter {
+			transform: scale(.5);
+			opacity: .5
+		}
+
+		.system-setting-box-enter.system-setting-box-enter-active {
+			-webkit-transition: all .2s;
+			transition: all .2s;
+			transform: scale(1);
+			opacity: 1
+		}
+
+		.system-setting-box-leave {
+			transform: scale(1);
+			opacity: 1
+		}
+
+		.system-setting-box-leave.system-setting-box-leave-active {
+			-webkit-transition: all .2s;
+			transition: all .2s;
+			transform: scale(.5);
+			opacity: 1
+		}
+
+		.system-setting-bg, .system-setting-container {
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0
+		}
+
+		.system-setting-bg {
+			background: rgba(0, 0, 0, .7);
+			z-index: -1
+		}
+
+		.system-setting-box {
+			width: 310px;
+			margin: auto
+		}
+
+		.system-setting-content {
+			width: 100%;
+			height: 250px;
+			background: #fafafa
+		}
+
+		.system-setting-footer, .system-setting-header {
+			height: 45px;
+			text-align: center;
+			background: #fff
+		}
+
+		.system-setting-toggle {
+			padding: 20px 10px 0 20px
+		}
+
+		.system-setting-btn {
+			background: #46b2fe;
+			color: #fff;
+			border: none;
+			font-size: .9rem;
+			padding: 6px 45px
+		}
+
+		.system-setting-input {
+			padding-left: 15px
+		}
+
+		.system-setting-input input {
+			width: 170px
+		}</style>
+
+		<style type="text/css">
+			.icon {
+			font-family: iconfont;
+			font-style: normal;
+			font-weight: 600;
+			font-size: 18px;
+			color: #555;
+			cursor: pointer
+		}
+
+		.textarea-container {
+			margin: auto;
+			position: relative;
+			margin-top: 80px;
+			height: 80%;
+			max-width: 800px;
+			min-width: 290px;
+			overflow: visible
+		}
+
+		.btn-box {
+			background: #eee
+		}
+
+		.icon-list, .icon-list-right {
+			display: inline-block
+		}
+
+		.icon-list-right {
+			float: right
+		}
+
+		.icon-btn-box {
+			padding: 0;
+			width: 45px
+		}
+
+		.icon-btn-box, .text-btn-box {
+			height: 45px;
+			margin: 0;
+			border: none;
+			background: transparent;
+			text-align: center;
+			line-height: 45px
+		}
+
+		.text-btn-box {
+			padding: 0;
+			padding: 0 10px
+		}
+
+		.text-btn {
+			font-family: iconfont;
+			font-style: normal;
+			font-weight: 600;
+			font-size: 12px;
+			color: #555;
+			cursor: pointer
+		}
+
+		.textarea-box {
+			width: 100%;
+			position: relative;
+			padding: 6px
+		}
+
+		.textarea {
+			border: none;
+			resize: none;
+			background: #fbfbfb;
+			font-size: 1rem;
+			height: 7rem;
+			overflow-y: scroll;
+			outline: none;
+			padding: 15px 15px 0;
+			color: #222
+		}
+
+		.textarea > pre {
+			margin: 0
+		}
+
+		.click-div {
+			position: absolute;
+			width: 48px;
+			height: 48px;
+			z-index: 999;
+			opacity: 0
+		}
+
+		.input {
+			font-size: 1rem;
+			height: 2.2rem;
+			margin-top: 2px;
+			padding-left: 6px;
+			padding-right: 40px
+		}
+
+		.change-btn {
+			font-family: iconfont;
+			font-style: normal;
+			font-weight: 600;
+			font-size: 21px;
+			color: #ddd;
+			cursor: pointer;
+			position: absolute;
+			right: 11px;
+			top: 14px
+		}
+
+		.textarea-title {
+			width: 100%;
+			height: 50px;
+			font-size: 1.5rem;
+			border: none;
+			background: #fbfbfb;
+			padding-left: 25px
+		}
+
+		.richtext-container {
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, .3);
+			position: fixed;
+			top: 0;
+			left: 0
+		}
+
+		.inputM-icon {
+			font-size: 20px
+		}</style>
+
+		<style type="text/css">
+			.modal-container {
+			background: rgba(0, 0, 0, .2);
+			width: 100%;
+			height: 100%;
+			position: fixed;
+			top: 0;
+			left: 0
+		}
+
+		.modal {
+			width: 90%;
+			max-width: 750px;
+			height: 80%;
+			background: #fbfbfb;
+			margin: auto;
+			margin-top: 85px
+		}
+
+		.modal-header {
+			height: 45px;
+			width: 100%;
+			padding-left: 15px;
+			background: #f1f1f1
+		}
+
+		.modal-content {
+			padding: 15px;
+			width: 100%;
+			height: 90%;
+			overflow-y: scroll
+		}
+
+		.modal-close-btn {
+			width: 45px;
+			line-height: 45px;
+			text-align: center;
+			float: right
+		}
+
+		.modal-title {
+			font-size: 16px;
+			line-height: 45px
+		}
+
+		.modal-content pre {
+			margin: 0
+		}</style>
+
+		<style type="text/css">
+			.left-box, .left-box-show, .right-box, .right-box-show {
+			position: absolute;
+			height: 100%;
+			-webkit-transition: all .45s cubic-bezier(.23, 1, .32, 1) 0ms;
+			transition: all .45s cubic-bezier(.23, 1, .32, 1) 0ms
+		}
+
+		.right-box, .right-box-show {
+			background: hsla(0, 0%, 100%, .01)
+		}
+
+		.imageMessage {
+			max-height: 50%
+		}
+
+		@media screen and (max-width: 767px) {
+			.imageMessage {
+				max-width: 180px
+			}
+		}
+
+		@media screen and (min-width: 768px) and (max-width: 980px) {
+			.imageMessage {
+				max-width: 250px
+			}
+		}
+
+		@media screen and (max-width: 980px) {
+			.right-box {
+				width: 100% !important;
+				left: 0
+			}
+
+			.left-box {
+				width: 275px;
+				left: -275px
+			}
+
+			.right-box-show {
+				width: 100% !important;
+				left: 275px
+			}
+
+			.left-box-show {
+				width: 275px;
+				left: 0
+			}
+		}
+
+		@media screen and (min-width: 981px) {
+			.right-box {
+				left: 275px
+			}
+
+			.left-box {
+				width: 275px;
+				left: 0
+			}
+
+			.right-box-show {
+				width: 100% !important;
+				left: 0
+			}
+
+			.left-box-show {
+				width: 275px;
+				left: -275px
+			}
+
+			.imageMessage {
+				max-width: 260px
+			}
+		}</style>
+
+		<title>Aw</title>
+	</head>
+	<body>
+		<div id="App">
+			<div data-reactroot="">
+				<div class="container">
+					<div>
+						<div style="background-repeat: no-repeat; background-size: cover; background-position: center center; width: 100%; height: 100%; background-color: rgb(245, 245, 245);">
+							<div class="left-box"><div data-flex="main:center" class="xs-hidden">
+								<div data-flex="main:center box:mean" data-flex-box="0" class="block3">
+									<div data-flex="main:center cross:center dir:top " class="selfinfo-container">
+										<div data-flex-box="1" class="selfinfo-avatar">
+											<div>
+												<div class="avatar" style="width: 50px; height: 50px; background-image: url('http://ooo.0o0.ooo/2016/10/18/5805c6b33b467.jpg');"></div>
+											</div>
+										</div>
+										<div data-flex-box="3">
+											<ul class="selfinfo-icon-ul">
+												<li class="selfinfo-icon-list-select"><i class="selfinfo-icon"></i></li>
+												<li class="selfinfo-icon-list"><i class="selfinfo-icon"></i></li>
+												<li class="selfinfo-icon-list"><i class="selfinfo-icon"></i></li>
+												<li class="selfinfo-icon-list"><i class="selfinfo-icon"></i></li>
+											</ul>
+										</div>
+										<div data-flex-box="2" data-flex="dir:bottom">
+											<ul class="selfinfo-icon-ul">
+												<li class="selfinfo-icon-list" ng-click="offLine()"><i class="selfinfo-icon"></i></li>
+												<li class="selfinfo-icon-list"><i class="selfinfo-icon"></i></li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div data-flex="main:center box:mean" data-flex-box="3" class="block4">
+									<div style="height: 100%;">
+										<div style="box-sizing: border-box; color: rgba(0, 0, 0, 0.54); font-size: 14px; font-weight: 500; line-height: 48px; padding-left: 16px; width: 100%;">
+											<span>已加入列表</span>
+											<hr style="margin: -1px 0px 0px; height: 1px; border: none; background-color: rgb(224, 224, 224);">
+										</div>
+										<div class="friendlist-list-box">
+											<ul class="friendlist-ul">
+												<div>
+													<li class="listitem-li-select" data-flex="main:left cross:center" style="visibility: visible; opacity: 1; transform: translateX(0px);">
+														<div>
+															<div class="avatar" style="width: 39px; height: 39px; background-image: url('http://oajmk96un.bkt.clouddn.com/lolo.jpg');">
+															</div>
+														</div>
+														<div data-flex="main:left cross:center" data-flex-box="1">
+															<div class="listitem-span" data-flex-box="1">
+																<span>MDZZ</span>
+															</div>
+														</div>
+													</li>
+													<li class="listitem-li" data-flex="main:left cross:center" style="visibility: visible; opacity: 1; transform: translateX(0px);">
+														<div>
+															<div class="avatar" style="width: 39px; height: 39px; background-image: url('http://oajmk96un.bkt.clouddn.com/lolo.jpg');">
+																</div>
+														</div>
+														<div data-flex="main:left cross:center" data-flex-box="1">
+															<div class="listitem-span" data-flex-box="1">
+																<span>nnd</span>
+															</div>
+														</div>
+													</li>
+													<li class="listitem-li" data-flex="main:left cross:center" style="visibility: visible; opacity: 1; transform: translateX(0px);">
+														<div>
+															<div class="avatar" style="width: 39px; height: 39px; background-image: url('http://oajmk96un.bkt.clouddn.com/lolo.jpg');">
+															</div>
+														</div>
+														<div data-flex="main:left cross:center" data-flex-box="1">
+															<div class="listitem-span" data-flex-box="1">
+																<span>tjjds</span>
+															</div>
+														</div>
+													</li>
+													<li class="listitem-li" data-flex="main:left cross:center" style="visibility: visible; opacity: 1; transform: translateX(0px);">
+														<div>
+															<div class="avatar" style="width: 39px; height: 39px; background-image: url('http://oajmk96un.bkt.clouddn.com/lolo.jpg');">
+															</div>
+														</div>
+														<div data-flex="main:left cross:center" data-flex-box="1">
+															<div class="listitem-span" data-flex-box="1">
+																<span>mdzz2</span>
+																</div>
+														</div>
+													</li>
+												</div>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="right-box" style="width: 1261px;">
+							<div data-flex="main:center box:mean" style="height: 100%;">
+								<div data-flex="dir:top ">
+									<div class="info-card-bg" style="display: none;">
+										<div class="info-card-box" data-flex="main:center cross:center dir:top">
+											<div class="info-card-close-btn">
+												<i class="info-card-close-icon"></i>
+											</div>
+											<div data-flex="main:center cross:center" data-flex-box="0" class="info-card-header">
+												<div data-flex="main:top cross:top dir:top" data-flex-box="2" class="info-card-head-left">
+													<h2>answer</h2>
+													<span>Oct 13, 2016 10:39 PM</span>
+												</div>
+												<div data-flex="main:center cross:top" data-flex-box="1" class="info-card-head-right">
+													<div>
+														<div class="avatar" style="width: 65px; height: 65px; background-image: url('http://ooo.0o0.ooo/2016/10/18/5805c6b33b467.jpg');">
+															
+														</div>
+													</div>
+													<input type="file" class="info-card-input-file">
+												</div>
+											</div>
+											<div class="info-card-setting">
+												<div class="info-card-container">
+													<div data-flex="main:center dir:top">
+														<form>
+															<dl data-flex="main:left cross:center">
+																<dt data-flex-box="0">昵称</dt>
+																<dd data-flex-box="1">answer</dd>
+															</dl>
+															<dl data-flex="main:left cross:center">
+																<dt data-flex-box="0">性别</dt>
+																<dd data-flex-box="1">男</dd>
+															</dl>
+															<dl data-flex="main:left cross:center">
+																<dt data-flex-box="0">邮箱</dt>
+																<dd data-flex-box="1">未知</dd>
+															</dl>
+															<dl data-flex="main:left cross:center">
+																<dt data-flex-box="0">签名</dt>
+																<dd data-flex-box="1">...</dd>
+															</dl>
+														</form>
+													</div>
+												</div>
+												<div class="info-card-btn-box">
+													<button class="info-card-btn">Edit</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								
+								<!-- react-empty: 73 -->
+									<div></div>
+									<div data-flex-box="0">
+										<div>
+											<div data-flex="main:left cross:center" class="headbar">
+												<div data-flex="main:left cross:center" data-flex-box="1" class="headbar-room-name">
+													<div>
+														<div class="avatar" style="width: 40px; height: 40px; background-image: url('http://oajmk96un.bkt.clouddn.com/lolo.jpg'); border-radius: 10px;">
+														</div>
+													</div>
+													<span class="headbar-room-name">MDZZ</span>
+												</div>
+												<div data-flex-box="0" class="headbar-icon-container">
+													<a href="https://github.com/redsx/CR" target="_blank"><i class="headbar-icon"></i></a>
+												</div>
+												<div data-flex-box="0" class="headbar-icon-container">
+													<i class="headbar-icon"></i>
+												</div>
+												<div data-flex="main:left cross:center" class="headbar-line"></div>
+												<div data-flex-box="0" class="headbar-icon-container" style="width: 60px;" onclick="showInfo()">
+													<i class="headbar-icon"></i>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<marquee bgcolor=#b8ff0c height=40 width=15% ng-show="showOrHide==1"
+											 style="position: fixed;z-index: 999;left: 39%;"
+											 hspace=20 vspace=10><P align=center>{{newUser}}</P>
+									</marquee>
+
+									<div data-flex="main:center" data-flex-box="1">
+										<div data-flex="dir:top" data-flex-box="1" class="chatarea-messages">
+											<div class="chatarea-bottom " style="display: none;">
+												<span>
+													<!-- react-text: 94 --> <!-- /react-text -->
+													<i class="icon chatarea-icon">ų</i>
+													<!-- react-text: 96 --> ԐтлϢ<!-- /react-text -->
+												</span>
+											</div>
+											<div class="chatarea-loading chatarea-loading-anim" data-flex-box="0" style="height: 0px;"></div>
+											<div data-flex-box="8" class="scroll-hidden" id="chat-message" style="overflow-y: scroll; padding-bottom: 2px;">
+												<div ng-repeat="message in messages.slice().reverse()" on-finish-message-filters>
+													<div data-flex="dir:left" class="message-list-item"
+														  ng-show="message.username!=master" >
+														<div data-flex="dir:left" data-flex-box="0" class="message-container">
+															<div data-flex-box="0" data-flex="main:top cross:top" class="avatar-container">
+																<div>
+																	<div class="avatar" style="width: 39px; height: 39px; background-image: url('https://ooo.0o0.ooo/2017/06/13/593fe98f9a8bd.jpg');"></div>
+																</div>
+															</div>
+															<div style="padding: 0px 10px; width: 100%; text-align: left;">
+															<span class="message-nickname-box">
+																<span class="message-nickname">{{message.username}}</span>
+																<span>{{message.time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+															</span>
+																<div class="message">
+																<span ng-if="containsImg(message.message)" ng-bind-html="message.message"></span>
+																<span  ng-if="!containsImg(message.message)">{{message.message}}</span>
+																	<div class="triangle-left-outer"></div>
+																	<div class="triangle-left-inner"></div>
+																</div>
+															</div>
+														</div>
+													</div>
+
+													<div data-flex="dir:right" class="message-list-item"
+														 ng-show="message.username==master">
+														<div data-flex="dir:right" data-flex-box="0" class="message-container">
+															<div data-flex-box="0" data-flex="main:top cross:top" class="avatar-container">
+																<div>
+																	<div class="avatar" style="width: 39px; height: 39px; background-image: url('http://ooo.0o0.ooo/2016/10/18/5805c6b33b467.jpg');"></div>
+																</div>
+															</div>
+															<div style="padding: 0px 10px; width: 100%; text-align: right;">
+															<span class="message-nickname-box">
+																<span class="message-nickname">{{message.username}}</span>
+																<span>{{message.time | date:'yyyy-MM-dd HH:mm:ss'}}</span></span>
+																<div class="message">
+																	<span ng-if="containsImg(message.message)" ng-bind-html="message.message"></span>
+																	<span  ng-if="!containsImg(message.message)">{{message.message}}</span>
+																	<div class="triangle-right-outer"></div>
+																	<div class="triangle-right-inner"></div>
+																</div>
+															</div>
+														</div>
+													</div>
+
+												</div>
+											</div>
+											<div data-flex-box="0">
+												<div data-flex="main:center cross:top" class="inputarea">
+													<div data-flex-box="0">
+														<div class="icon-box">
+															<i class="icon"></i>
+														</div>
+													</div>
+													<div data-flex-box="0">
+														<div class="icon-box">
+															<i class="icon"></i>
+														</div>
+													</div>
+													<!--输入框-->
+													<div data-flex="main:center" data-flex-box="1" class="input-box">
+														<input data-flex-box="1" class="input" contenteditable="true" ng-model="messageContent">
+													</div>
+													<div data-flex-box="0">
+														<div class="icon-box" ng-click="sendInfo()">
+															<i class="icon"> </i>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div data-flex-box="0">
+												<div data-flex="main:center" style="width: 100%; height: 0px; opacity: 0; padding: 0px; background: white; position: relative; transition: all 0.5s; border-top: 1px solid rgba(204, 204, 204, 0.33);">
+													<div data-flex-box="0" data-flex="main:center cross:center" style="position: relative; width: 168px; height: 100%; background-position: center center; background-repeat: no-repeat; background-size: contain; background-image: url('http://oajmk96un.bkt.clouddn.com/1470361254005warn.gif');">
+														<input type="file" accept="image/png,image/gif,image/gif" style="position: absolute; width: 100%; height: 100%; left: 0px; top: 0px; opacity: 0; z-index: 8;">
+															<span style="color: rgb(68, 68, 68); opacity: 0.8; text-shadow: rgba(0, 0, 0, 0.5) 0px 0px 1px; font-size: 18px;">
+															<!-- react-text: 118 --> <!-- /react-text --><!-- react-text: 119 -->ͼƬԤ@ïʏԫ<!-- /react-text --><!-- react-text: 120 --> <!-- /react-text -->
+															</span>
+													</div>
+													<div data-flex-box="2" style="overflow-y: scroll;">
+														<div>
+															<div class="" style="min-width: 63px; width: 12.5%; height: 63px; margin: 5px; border-collapse: collapse; font-size: 0px; display: inline-block; background-position: center center; background-repeat: no-repeat; background-size: contain; background-image: url('http://oajmk96un.bkt.clouddn.com/1470361254005warn.gif'); visibility: visible; opacity: 1; transform: translateX(0px);">
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div data-flex-box="0" class="chatarea-room-list">
+											<div>
+												<div class="roominfo" style="position: static; right: 0px; background: rgba(255, 255, 255, 0.3);">
+													<div>
+														<div class="roominfo-bulletin scroll-hidden">
+															<div>
+																<span class="roominfo-title">公告</span>
+																<span class="roominfo-change-btn"></span>
+															</div>
+															<p>有问题欢迎提issue</p>
+														</div>
+														<div class="hr"></div>
+														<div class="roominfo-list">
+															<div class="roominfo-list-header">
+																<span class="roominfo-title">近期活跃</span>
+																<span class="roominfo-change-btn">
+																	<i class="icon roominfo-icon"></i>
+																</span>
+															</div>
+															<ul class="roominfo-ul scroll-hidden">
+																<!--在线人员-->
+																<li class="roominfo-li" ng-repeat="member in onlines"
+																	data-flex="main:left cross: center">
+																	<div>
+																		<div class="avatar"
+																			 style="width: 30px; height: 30px; background-image: url('https://ooo.0o0.ooo/2017/06/13/593fe98f9a8bd.jpg');"></div>
+																	</div>
+																	<span class="roominfo-li-right"
+																		  data-flex="main:left" data-flex-box="1"><span
+																			class="roominfo-li-nickname"
+																			data-flex-box="1">{{member}}</span><span
+																			data-flex-box="0"><i
+																			class="icon roominfo-li-icon"></i></span></span>
+																</li>
+
+															</ul>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div></div>
+						<div></div>
+						<!-- react-empty: 53 --><!-- react-empty: 54 -->
+					</div>
+				</div>
+				<div></div>
+			</div>
+		</div>
+	</div>
+
+	<!--隐藏域-->
+	<input type="hidden" id="master" value="<%=master%>">
+
+</body>
+</html>
+<script type="text/javascript" src="javascripts/jquery.min.1.10.2.js"></script>
+<script type="text/javascript" src="javascripts/angularJS/angular.min.js"></script>
+<script type="text/javascript" src="javascripts/angularJS/angular-sanitize.js"></script>
+<script type="text/javascript" src="javascripts/qegoo.util.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/javascripts/chatRoom.js"></script>
+<script>
+	function showInfo() {
+		$("div.roominfo").toggle(500);
+    }
+</script>

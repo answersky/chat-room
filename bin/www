@@ -1,0 +1,149 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('nodejsapp:server');
+var http = require('http');
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+
+//在线会员
+var users =[];
+io.sockets.on('connection', function (socket) {
+
+    socket.on('message', function (from, msg) {
+        //保存聊天消息
+        saveMessage(from,msg);
+        socket.broadcast.emit('sendMessage',{username:from,message:msg});
+        socket.emit('sendMessage',{username:from,message:msg});
+    });
+
+    socket.on('login',function(data){
+        if(data in users){
+            console.log(data);
+        }else{
+            var nickname = data;
+            if(users.indexOf(nickname)<0){
+                users.push(nickname);
+            }
+            console.info(nickname+" 已上线");
+            //加入到新上线组，广播给所有人
+            socket.broadcast.emit('online',{username:nickname,type:1});
+        }
+    });
+
+    socket.on('offline',function (username) {
+        console.log(username+" 下线");
+        users.remove(username);
+        socket.broadcast.emit('online',{username:username,type:0});
+    });
+
+    socket.on('disconnect', function () {
+        console.log("disconnect");
+    });
+});
+
+
+Array.prototype.remove=function(value){
+    var len = this.length;
+    for(var i=0,n=0;i<len;i++){//把出了要删除的元素赋值给新数组
+        if(this[i]!=value){
+            this[n++]=this[i];
+        }else{
+            console.log(i);//测试所用
+        }
+    }
+    this.length = n;
+};
+
+
+var messageDao = require("../dao/messageDao");
+function saveMessage(from, info) {
+    messageDao.saveMessage(from,info,function (data) {
+        console.log(data);
+    });
+}
+
+module.exports.users = users;

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="/stylesheets/bootstrap.min.css" media="screen">
+    <style type="text/css">
+        a{margin-left: 20px; text-decoration: none;}
+        a:hover{text-decoration: underline;}
+
+        .send_r {
+            position: relative;
+            margin-top: 2px;
+            left: 180px;
+            max-width: 100px;
+            height: 35px;
+            background: #01a8f8;
+            border-radius: 5px; /* 圆角 */
+            margin-right: 17px;
+        }
+
+        .send_l {
+            position: relative;
+            margin-top: 2px;
+            max-width: 100px;
+            height: 35px;
+            background: #01a8f8;
+            border-radius: 5px; /* 圆角 */
+            margin-left: 17px;
+        }
+
+        .send_r .arrow {
+            position: absolute;
+            color: #ffffff;
+            top: 5px;
+            right: -16px; /* 圆角的位置需要细心调试哦 */
+            width: 0;
+            height: 0;
+            font-size: 0;
+            border: solid 8px;
+            border-color: #ffffff #ffffff #ffffff #01a8f8;
+        }
+
+        .send_l .left_arrow {
+            position: absolute;
+            top: 9px;
+            left: -16px; /* 圆角的位置需要细心调试哦 */
+            width: 0;
+            height: 0;
+            font-size: 0;
+            border: solid 8px;
+            border-color: #ffffff #01a8f8 #ffffff #ffffff;
+        }
+
+        div.message {
+            margin: 0 auto;
+            min-width: 30px;
+            line-height: 32px;
+        }
+    </style>
+</head>
+<body>
+
+<p>Welcome to your home ~</p>
+<p><a href="/logout">我要注销 </a>
+</p>
+<input type="button" value="answer">
+<span style="display: none" id="host"><%=socket_host%></span>
+<div class="chat" style="border: black solid 1px;width: 300px;height: 236px;margin-top: 10px;">
+
+</div>
+<div class="input">
+        <input type="text" id="message" name="message">
+        <input type="hidden" id="username" name="username" value="liuf">
+        <input type="hidden" id="userId" name="userId" value="1">
+        <input type="hidden" id="messageTo" name="messageTo" value="answer">
+        <input type="button" id="sendMessage" value="发送">
+</div>
+
+
+<div id="box" style="width:400px;height:400px;border:1px solid;" contenteditable></div>
+</body>
+</html>
+<script type="text/javascript" src="javascripts/jquery.min.1.10.2.js"></script>
+<script type="text/javascript" src="javascripts/bootstrap.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    $(function(){
+        var host = $("#host").text();
+        var ws = io.connect(host);
+        ws.on('connect', function (data) {
+            console.log(data);
+        });
+
+        var username = $("#username").val();
+        var messageTo = $("#messageTo").val();
+        ws.emit('login',username);
+
+        //发送图片
+        img(ws, username, messageTo);
+
+        $("#sendMessage").click(function () {
+            var message = $("#message").val();
+            //清空输入框
+            $("#message").val('');
+            //将自己的消息放到聊天框中
+            message = unescape(message);
+            var timestamp = new Date().getTime();
+            var html = '<div class="send_r">' +
+                '<div class="message" id="mess_' + timestamp + '"></div><div class="arrow"></div></div>';
+            $("div.chat").append(html);
+            $("#mess_" + timestamp).text(message);
+            ws.emit('message',username,messageTo,message);
+        });
+
+        ws.on('to'+username, function (data) {
+            var mes = unescape(data.message);
+            var timestamp = new Date().getTime();
+            var html = ' <div class="send_l">' +
+                '<div class="message" id="' + timestamp + '"></div><div class="left_arrow"></div></div>';
+            $("div.chat").append(html);
+            $("#" + timestamp).text(messageTo + ":" + mes);
+        });
+
+    });
+
+    function img(ws, username, messageTo) {
+        //查找box元素,检测当粘贴时候,
+        document.querySelector('#box').addEventListener('paste', function (e) {
+
+            //判断是否是粘贴图片
+            if (e.clipboardData && e.clipboardData.items[0].type.indexOf('image') > -1) {
+                var reader = new FileReader();
+                var file = e.clipboardData.items[0].getAsFile();
+                reader.onload = function (event) {
+                    // event.target.result 即为图片的Base64编码字符串
+                    var base64_str = event.target.result;
+                    console.log(base64_str);
+                    var html = "<img width='100' height='100' src='" + base64_str + "'>";
+                    $("#box").append("<img width='100' height='100' src='" + base64_str + "'>");
+                    ws.emit('message', username, messageTo, html);
+                };
+                reader.readAsDataURL(file);
+            }
+        }, false);
+    }
+
+
+</script>

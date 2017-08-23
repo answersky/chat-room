@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="customer" ng-controller="userController">
+<head>
+    <meta charset="utf-8"/>
+    <title>快易购客服聊天</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content=""/>
+    <meta name="author" content="stilearning"/>
+    <link href="/stylesheets/bootstrap.css" rel="stylesheet"/>
+    <link href="/stylesheets/bootstrap-responsive.css" rel="stylesheet"/>
+    <link href="/stylesheets/qegoo.css" rel="stylesheet"/>
+    <link href="/stylesheets/qegoo-responsive.css" rel="stylesheet"/>
+    <link href="/stylesheets/qegoo-color.css" rel="stylesheet"/>
+    <link href="/stylesheets/bootstrap-wysihtml5.css" rel="stylesheet"/>
+    <link href="/stylesheets/font-awesome.css" rel="stylesheet"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
+<body>
+<header class="header">
+    <div class="navbar-helper">
+        <div class="row-fluid">
+            <div class="span2">
+                <span style="display: none" id="host"><%=socket_host%></span>
+                <input type="hidden" id="customerNumber" name="customerNumber" value="<%=customerNumber%>">
+                <input type="hidden" ng-model="username" on-finish-render-filters>
+                <div class="panel-sitename"><a href="../index.html"><span class="color-white"><img src="img/logo.png"
+                                                                                                   alt=""/></span></a>
+                </div>
+            </div>
+            <div class="span9">
+                <div class="panel-search">
+                    <form class="form-search">
+                        <div class="input-icon-append">
+                            <button type="submit" rel="tooltip-bottom"
+                                    ng-click="filterMessage()"
+                                    class="icon">
+                                <i class="icon-search"></i></button>
+                            <input class="input-large search-query grd-white"
+                                   ng-model="key"
+                                   maxlength="23" placeholder="输入您想查找的内容"
+                                   type="text"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="span1">
+                <div class="panel-ext" style="padding-top: 15px;">
+                    <div class="btn-group user-group"><a class="dropdown-toggle" data-toggle="dropdown" href="#"> <img
+                            class="corner-all" align="middle" src="img/user-thumb-mini.jpg" title="John Doe"
+                            alt="john doe"/>
+                        <button ng-if="!!userInfo.name" class="btn btn-small btn-inverse">用户{{userInfo.name}}</button>
+                        <button ng-if="!userInfo.name" class="btn btn-small btn-inverse">用户{{username}}</button>
+                    </a>
+                        <ul class="dropdown-menu dropdown-user" role="menu" aria-labelledby="dLabel">
+                            <li>
+                                <div class="media"><a class="pull-left" href="#"> <img class="img-circle"
+                                                                                       src="img/user.jpg"
+                                                                                       title="profile" alt="profile"/>
+                                </a>
+                                    <div class="media-body description">
+                                        <p>
+                                            <strong ng-if="!!userInfo.name">用户{{userInfo.name}}</strong>
+                                            <strong ng-if="!userInfo.name">用户{{username}}</strong>
+                                        </p>
+                                        <p class="muted">IP:<%= userIp%></p>
+                                        <!--<ul class="icons-list unstyled clearfix">-->
+                                        <!--<h4><span class="color-orange"><img src="img/favorites.png" alt=""/><img-->
+                                        <!--src="img/favorites.png" alt=""/><img src="img/favorites.png"-->
+                                        <!--alt=""/></span></h4>-->
+                                        <!--</ul>-->
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="dropdown-footer">
+                                <div><a class="btn btn-small pull-right" href="../login.html"
+                                        style="margin-right: 8px;">登录</a> <a class="btn btn-small" href="#">切换账户</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<section class="main-content">
+    <div class="row-fluid">
+        <div class="span3">
+            <aside class="side-left">
+                <div class="sidebar-right">
+                    <div class="sidebar-right-header">
+                        <div class="sr-header-right"><span class="color-orange">
+                            <img src="/img/favorites.png" alt="" ng-repeat="i in nowChatContact.score"/>
+                        </span></div>
+                        <div class="sr-header-left">
+                            <p class="bold">{{nowChatContact.to}}</p>
+                            <small class="muted">{{nowChatContact.description}}</small>
+                        </div>
+                        <!--<div class="sr-header-right"><span class="color-orange"><img src="img/favorites.png"-->
+                        <!--alt=""/><img-->
+                        <!--src="img/favorites.png" alt=""/><img src="img/favorites.png" alt=""/><img-->
+                        <!--src="img/favorites.png" alt=""/><img src="img/favorites.png" alt=""/></span></div>-->
+                        <!--<div class="sr-header-left">-->
+                        <!--<p ng-if="!!userInfo.name" class="bold">用户{{userInfo.name}}</p>-->
+                        <!--<p ng-if="!userInfo.name" class="bold">用户{{username}}</p>-->
+                        <!--<small class="muted">IP:<%= userIp%></small>-->
+                        <!--</div>-->
+                    </div>
+                    <div class="sidebar-right-content">
+                        <div class="tab-content">
+                            <div class="tab-pane fade active in" id="contact">
+                                <div class="side-contact">
+                                    <div class="contact-control">
+                                        <!--<div class="btn-group pull-right">-->
+                                        <!--<button class="dropdown-toggle bg-transparent no-border"-->
+                                        <!--data-toggle="dropdown"><i class="icofont-chevron-down"></i></button>-->
+                                        <!--<ul class="dropdown-menu">-->
+                                        <!--<li><a href="#"><i class="icofont-certificate color-green"></i> 在线</a>-->
+                                        <!--</li>-->
+                                        <!--<li><a href="#"><i class="icofont-certificate color-silver-dark"></i>-->
+                                        <!--已下线</a></li>-->
+                                        <!--</ul>-->
+                                        <!--</div>-->
+                                        <h6><i class="icon-user"></i> 所有客服</h6>
+                                    </div>
+                                    <ul id="contact-list" id="contact-list" class="contact-list"
+                                        style="max-height:100%;">
+                                        <li ng-repeat="contact in (isLogin ? contacts :(contacts|filter:{name:customerNumber})) "
+                                            ng-class="$index==chatStep?'contact-alt grd-white active':'contact-alt grd-white'">
+                                            <a href="#" ng-click="changeChat($index,contact.name)">
+                                                <div class="contact-item">
+                                                    <div class="pull-left"><img class="contact-item-object"
+                                                                                style="width: 32px;height: 32px;"
+                                                                                src="img/user-thumb-mini.jpg" alt=""/>
+                                                    </div>
+                                                    <div class="contact-item-body">
+                                                        <div class="status" title="busy">
+                                                            <i class="icofont-certificate color-green"
+                                                               ng-show="isShow(contact.name)"></i>
+                                                            <i class="icofont-certificate color-silver-dark"
+                                                               ng-hide="isShow(contact.name)"></i>
+                                                        </div>
+                                                        <p class="contact-item-heading">{{contact.name}}</p>
+                                                        <p class="help-block">
+                                                            <small class="muted">{{contact.time}}</small>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+        <div class="span6" style="margin-left:0;">
+            <div class="content">
+                <div class="row-fluid">
+                    <ul class="toolbar">
+                        <li style="margin:0;height: 20px;" id="contact_user">
+                            &nbsp;&nbsp;<strong>{{nowChatContact.to}}</strong>
+                            <small class="muted" style=" margin-left:5px;">{{inputType}}</small>
+                        </li>
+                    </ul>
+                    <div class="corner-all-content  fade in active  chat" id="recent">
+                        <div ng-repeat="message in nowChatContact.messages.slice().reverse()"
+                             on-finish-message-filters
+                             ng-class="nowChatContact.to==message.send?'media-body':'media-body text_r'">
+                            <h6 ng-class="nowChatContact.to==message.send?'media-heading':'media-heading text_r'">
+                                <a href="#">{{message.send}}</a>
+                                <small class="helper-font-small">&nbsp;&nbsp;&nbsp;{{message.create_time |
+                                    date:'yyyy-MM-dd HH:mm:ss'}}
+                                </small>
+                            </h6>
+                            <p ng-class="nowChatContact.to==message.send?'talk-box color-blanchedalmond':'talk-box float_r text_l color-aliceblue'"
+                               ng-if="containsImg(message.message)" ng-bind-html="message.message">
+                            </p>
+                            <p ng-class="nowChatContact.to==message.send?'talk-box color-blanchedalmond':'talk-box float_r text_l color-aliceblue'"
+                               ng-if="!containsImg(message.message)">{{message.message}}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <ul class="toolbar">
+                            <li style=" margin-left:5px;">
+                                <iframe id="framFile" name="framFile" style="display: none;"></iframe>
+                                <form action="/file-upload" id="form" method="post" target="framFile"
+                                      enctype="multipart/form-data" style="display: none">
+                                    <input type="file" id="file" name="fileName" multiple='mutiple'
+                                           onchange="uploadFile()">
+                                    <input type="button" id="submitFile" value="上传">
+                                </form>
+                                <a class="btn btn-mini fileUpload"><i class="icofont-upload-alt"
+                                                                      style="margin-top:2px;"></i>&nbsp;上传文件</a>
+                            </li>
+                            <!--<li>-->
+                            <!--<div class="btn-group user-group"><a class="dropdown-toggle btn btn-mini"-->
+                            <!--data-toggle="dropdown" href="#"> <i-->
+                            <!--class="icon-retweet" style="margin-top:2px;"></i>&nbsp;转移客户 </a>-->
+                            <!--&lt;!&ndash;<ul class="dropdown-menu dropdown-user" role="menu" aria-labelledby="dLabel"-->
+                            <!--style="margin-left: 0px; margin-top: -320px;display: block;">-->
+                            <!--<li>-->
+                            <!--<div class="media"><a class="pull-left" href="#"> <img class="img-circle"-->
+                            <!--src="img/user.jpg"-->
+                            <!--title="profile"-->
+                            <!--alt="profile"/>-->
+                            <!--</a><a class="pull-left" href="#"> <img class="img-circle"-->
+                            <!--src="img/user.jpg" title="profile"-->
+                            <!--alt="profile"/> </a><a-->
+                            <!--class="pull-left" href="#"> </a></div>-->
+                            <!--</li>-->
+                            <!--<li class="dropdown-footer">-->
+                            <!--<textarea name="message" data-form="wysihtml5" rows="6" class="span12"-->
+                            <!--style="border-radius:0px;width: 97%;"></textarea>-->
+                            <!--<div><a class="btn btn-primary btn-small pull-right" href="#"-->
+                            <!--style="margin-right: 10px;">确定</a><a class="btn btn-small" href="#">取消</a>-->
+                            <!--</div>-->
+                            <!--</li>-->
+                            <!--</ul>&ndash;&gt;-->
+                            <!--</div>-->
+                            <!--</li>-->
+                            <li style="float:right;">
+                                <button type="submit" id="sendMessage" ng-click="sendInfo()"
+                                        class="btn btn-primary send">发送
+                                </button>
+                            </li>
+                            <li style="float: right;">
+                                <div class="grade">评分
+                                    <a href="#">
+                                        <i id="start_1" class="start icofont-star color-orange"></i></a>
+                                    <a href="#">
+                                        <i id="start_2" class="start icofont-star color-orange"></i></a>
+                                    <a href="#"><i id="start_3" class="start icofont-star color-orange"></i></a>
+                                    <a href="#"><i id="start_4" class="start icofont-star color-orange"></i></a>
+                                    <a href="#"><i id="start_5" class="start icofont-star color-orange"></i></a>
+                                    <button class="btn btn-mini" id="scoreSubmit" ng-click="addNewScore()">提交</button>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="controls">
+                            <input type="hidden" id="username" name="username" value="<%=userName%>">
+                            <input type="hidden" id="ip" name="ip" value="<%=userIp%>">
+                            <input type="hidden" id="messageTo" name="messageTo">
+                            <textarea name="message" id="message" ng-model="messageContent" data-form="wysihtml5"
+                                      rows="6" class="span12" ng-focus="listenInput(1)" ng-blur="listenInput(0)"
+                                      style="border-radius:0px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="span3" style="margin-left:-1px;">
+            <aside class="side-right">
+                <div class="sidebar-right">
+                    <div class="sidebar-right-control">
+                        <ul class="sr-control-item">
+                            <li class="active"><a href="#userMessage" data-toggle="tab" title="contacts"><i
+                                    class="icon-user"></i> 用户信息</a></li>
+                            <li><a href="#Version" data-toggle="tab" title="alternative 1"><i class="icon-eye-open"></i>
+                                用户行为</a></li>
+                            <li><a href="#chat" data-toggle="tab" title="alternative 1"><i
+                                    class="icon-question-sign"></i> 常见问题</a></li>
+                        </ul>
+                    </div>
+                    <div class="sidebar-right-part" style="padding:0;">
+                        <div class="tab-content">
+                            <div class="tab-pane fade active in" id="userMessage">
+                                <div class="side-chat">
+                                    <div class="chat-header">
+                                        <h6>基本信息</h6>
+                                    </div>
+                                    <div class="chat-content">
+                                        <div class="chat-out">
+                                            <span ng-if="!userInfo.name" class="chat-time">{{userInfo.user_name == null ? '--': userInfo.user_name}}</span>
+                                            <span ng-if="!!userInfo.name" class="chat-time">{{userInfo.name}}</span>
+                                            <div class="contact-item-heading">姓名:</div>
+                                        </div>
+                                        <div class="chat-out">
+                                            <span ng-if="!userInfo.infomobile" class="chat-time"> {{userInfo.mobile == null ? '--': userInfo.mobile}}</span>
+                                            <span ng-if="!!userInfo.infomobile" class="chat-time"> {{userInfo.infomobile}}</span>
+                                            <div class="contact-item-heading">联系电话:</div>
+                                        </div>
+                                        <div class="chat-out">
+                                            <span ng-if="!userInfo.infoemail" class="chat-time"> {{userInfo.email == null ? '--':userInfo.email}}</span>
+                                            <span ng-if="!!userInfo.infoemail"
+                                                  class="chat-time"> {{userInfo.infoemail}}</span>
+                                            <div class="contact-item-heading">邮箱:</div>
+                                        </div>
+                                        <div class="chat-out">
+                                            <span ng-if="!userInfo.infoqq" class="chat-time"> {{userInfo.qq == null ? '--':userInfo.qq}}</span>
+                                            <span ng-if="!!userInfo.infoqq"
+                                                  class="chat-time"> {{userInfo.infoqq}}</span>
+                                            <div class="contact-item-heading">QQ:</div>
+                                        </div>
+                                        <div class="chat-out">
+                                            <span class="chat-time"> {{userInfo.ipaddress == null ? '--': userInfo.ipaddress}}</span>
+                                            <div class="contact-item-heading">访问区域:</div>
+                                        </div>
+                                        <div class="chat-out"><span class="chat-time"> {{userInfo.lateTime==null ? '--':(userInfo.lateTime|date:'yyyy-MM-dd HH:mm:ss')}}</span>
+                                            <div class="contact-item-heading">最近访问时间:</div>
+                                        </div>
+                                        <div class="chat-out"><span
+                                                class="chat-time">{{userInfo.weekHz == null ? '--':userInfo.weekHz}}次/周 &nbsp;&nbsp;&nbsp;{{userInfo.monthHz == null ? '--':userInfo.monthHz}}次/月 </span>
+                                            <div class="contact-item-heading">访问频率:</div>
+                                        </div>
+                                        <div class="chat-out">
+                                            <span class="chat-time">{{userInfo.lastTime == null ? '--':(userInfo.lastTime |date:'yyyy-MM-dd HH:mm:ss')}}</span>
+                                            <div class="contact-item-heading">第一次访问时间:</div>
+                                        </div>
+                                        <div class="chat-out">
+                                            <span class="chat-time">{{userInfo.company == null ? '--':userInfo.company}}</span>
+                                            <div class="contact-item-heading">公司名称:</div>
+                                        </div>
+                                        <div class="chat-out"><span class="chat-time">贸易商/终端商/OEM</span>
+                                            <div class="contact-item-heading">客户类型:</div>
+                                        </div>
+                                        <div class="chat-out"><span class="chat-time">{{userInfo.position}}</span>
+                                            <div class="contact-item-heading">客户职务:</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="side-chat">
+
+                                    <div class="chat-header">
+                                        <h6>订单信息</h6>
+                                    </div>
+
+                                    <div class="side-contact">
+                                        <ul class="contact-list">
+                                            <li class="contact-alt grd-white product" ng-repeat="order in orders">
+                                                <a href="#">
+                                                    <div class="contact-item">
+                                                        <div class="pull-left"><i class=" icon-leaf"></i></div>
+                                                        <div class="contact-item-body">
+                                                            <div class="status">查看详情</div>
+                                                            <p class="contact-item-heading">订单号：{{order.order_no}}</p>
+                                                            <p class="help-block">
+                                                                <small class="muted">订单状态：{{order.status}}</small>
+                                                            </p>
+                                                            <p class="help-block">
+                                                                <small class="muted">所得积分：{{order.order_integral}}
+                                                                </small>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </a></li>
+                                        </ul>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="chat">
+                                <div class="side-chat">
+                                    <div class="chat-content" style="max-height: 484px;height: 484px;">
+                                        <div class="chat-in" ng-repeat="question in nowChatContact.questions">
+                                            <strong class="chat-user">提问：</strong>{{question.content}}
+                                            <div class="chat-in">
+                                                <strong class="color-red">回答：</strong>{{question.answer}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="Version">
+                                <div class="side-chat">
+                                    <div class="chat-header">
+                                        <h6>搜索型号</h6>
+                                    </div>
+                                    <div class="side-contact">
+                                        <ul class="contact-list">
+                                            <li ng-show="pnInfos.length <= 0 " style="text-align: center;"
+                                                class="contact-alt grd-white product">
+                                                暂无信息！
+                                            </li>
+                                            <li ng-if="pnInfos.length>0" ng-repeat="pn in pnInfos"
+                                                class="contact-alt grd-white product">
+                                                <a href="#">
+                                                    <div class="contact-item">
+                                                        <div class="pull-left"><img class="contact-item-object"
+                                                                                    style="width: 32px;height: 32px;"
+                                                                                    src="/img/product.jpg" alt=""></div>
+                                                        <div class="contact-item-body">
+                                                            <div class="status">查看详情&nbsp;<i class="icon-refresh"></i>
+                                                            </div>
+                                                            <p class="contact-item-heading">{{pn.pn}}</p>
+                                                            <p class="help-block">
+                                                                <small class="muted">{{pn.mfs}}</small>
+                                                            </p>
+                                                            <p class="help-block">
+                                                                <small class="muted">描述：{{pn.description}}</small>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="side-chat">
+                                    <div class="chat-header">
+                                        <h6>浏览记录</h6>
+                                    </div>
+                                    <div class="side-nav ">
+                                        <ul class="nav-side">
+                                            <li style="text-align: center;" ng-if="links.length<=0">
+                                                暂无信息！
+                                            </li>
+                                            <li ng-repeat="link in links"><a href="">
+                                                <small class="muted">{{link.local_url}}
+                                                    <!--<span class="status float_r">查看热点图</span>-->
+                                                </small>
+                                            </a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+<footer>
+    <p>版权所有 © 快易购科技（深圳）有限公司 <a href="#">粤ICP备13003228号-1</a></p>
+</footer>
+<script src="/javascripts/jquery.min.1.10.2.js"></script>
+<script type="text/javascript" src="javascripts/angularJS/angular.min.js"></script>
+<script type="text/javascript" src="javascripts/angularJS/angular-sanitize.js"></script>
+<script src="/javascripts/bootstrap.js"></script>
+<script type="text/javascript" src="javascripts/qegoo.util.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<!--<script src="/javascripts/contact.js"></script>-->
+<!--<script src="/javascripts/userContact.js"></script>-->
+<script src="/javascripts/chat.js"></script>
+<script src="/javascripts/main.js"></script>
+<script src="/javascripts/userApp.js"></script>
+<script src="/javascripts/fileUpload.js"></script>
+</body>
+</html>
+<script>
+    $(function () {
+        $("#message").click(function () {
+            scrollBottom("recent");
+        })
+    })
+</script>
